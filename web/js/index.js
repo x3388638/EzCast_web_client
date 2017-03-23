@@ -10,9 +10,14 @@ var App = (_ => {
 	 * init
 	 */
 	var _serverIP = null;
+	var socket = io();
+	var connectInterval = 0;
 	$inputMsg.focus();
 	// TODO: get my ip
 	// TODO: set interval to send multicast to find server
+	connectInterval = setInterval(function() {
+		socket.emit('connectToServer', '');
+	}, 2000);
 
 	/**
 	 * bindEvent

@@ -43,7 +43,7 @@ serverSocket.on('message', function (message, rinfo) {
 	switch(msg.event) {
 		case 'register':
 			if(msg.data.key == _registerKey) {
-				_registerCallback(remoteAddr);
+				_registerCallback(remoteAddr, msg.data.ip);
 			}
 			break;
 	}

@@ -4,6 +4,7 @@ var App = (_ => {
 	 */
 	var $chatContainer = $('#chatContainer');
 	var $inputContainer = $('#inputContainer');
+	var $inputName = $inputContainer.find('#name');
 	var $inputMsg = $inputContainer.find('#inputMsg');
 
 	/**
@@ -12,9 +13,8 @@ var App = (_ => {
 	var _socketTarget = null;
 	var _socket = io();
 	var _registerInterval = 0;
+	var _selfIP = null;
 	$inputMsg.focus();
-	// TODO: get my ip
-	// TODO: set interval to send multicast to find server
 	_registerInterval = setInterval(function() {
 		_socket.emit('register', '');
 	}, 2000);
@@ -27,21 +27,28 @@ var App = (_ => {
 	/**
 	 * ws event
 	 */
-	_socket.on('register', function(msg) {
-		msg = JSON.parse(msg);
-		if(msg.data.register) {
-			console.log('register success');
-			console.log(msg);
-			_socketTarget = msg.data.url;
-			clearInterval(_registerInterval)
-		}
-	});
-
+	_socket.on('register', _handleOnRegister);
+	
 	function _handleSendMsg(e) {
 		if(e.keyCode == 13) {
 			var msg = $inputMsg.val().trim();
 			console.log(msg);
 			$inputMsg.val('');
+		}
+	}
+
+	function _handleOnRegister(msg) {
+		msg = JSON.parse(msg);
+		console.log(msg);
+		if(msg.data.register) {
+			console.log('register success.');
+			clearInterval(_registerInterval);
+			_socketTarget = msg.data.url;
+			_selfIP = msg.data.ip;
+			// TODO: build ws with _socketTarget
+			$inputName.text(`${_selfIP} > `);
+		} else {
+			console.log('register fail.')
 		}
 	}
 

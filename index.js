@@ -15,11 +15,12 @@ io.on('connection', function(socket){
 	 * send multicast to fin server
 	 */
 	socket.on('register', function() {
-		mcast.register(function(url) {
+		mcast.register(function(url, selfIP) {
 			socket.emit('register', JSON.stringify({
 				data: {
 					register: true, 
-					url: `http://${url}:${+CONFIG.webPort+1}/`
+					url: `http://${url}:${+CONFIG.webPort+1}/`, 
+					ip: selfIP
 				}
 			}));
 		});

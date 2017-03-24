@@ -10,7 +10,7 @@ var App = (_ => {
 	/**
 	 * init
 	 */
-	var _socketTarget = null;
+	var _socketServer = null;
 	var _socket = io();
 	var _registerInterval = 0;
 	var _selfIP = null;
@@ -28,12 +28,20 @@ var App = (_ => {
 	 * ws event
 	 */
 	_socket.on('register', _handleOnRegister);
+	function _bindServerSocket() {
+		_socketServer.on('message', _handleOnMessage);
+	}
 	
 	function _handleSendMsg(e) {
 		if(e.keyCode == 13) {
 			var msg = $inputMsg.val().trim();
-			console.log(msg);
 			$inputMsg.val('');
+			_socketServer.emit('message', JSON.stringify({
+				event: 'newMessage', 
+				data: {
+					msg
+				}
+			}));
 		}
 	}
 
@@ -43,13 +51,33 @@ var App = (_ => {
 		if(msg.data.register) {
 			console.log('register success.');
 			clearInterval(_registerInterval);
-			_socketTarget = msg.data.url;
+			_socketServer = io.connect(msg.data.url);
+			_bindServerSocket();
 			_selfIP = msg.data.ip;
-			// TODO: build ws with _socketTarget
 			$inputName.text(`${_selfIP} > `);
 		} else {
 			console.log('register fail.')
 		}
+	}
+
+	function _handleOnMessage(data) {
+		console.log('45646546213546')
+		data = JSON.parse(data);
+		console.log(data);
+		switch(data.event) {
+			case 'newMessage': 
+				_renderNewMessage(data.data.msg, data.data.ip);
+				break;
+		}
+	}
+
+	function _renderNewMessage(msg, ip) {
+		$chatContainer.append(
+			`<div class="msgRow">
+				<span class="title">${ip}</span>
+				<span class="content">${msg}</span>
+			</div>`
+		);
 	}
 
 })();

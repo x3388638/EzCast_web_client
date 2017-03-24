@@ -9,7 +9,7 @@ var path = require('path');
 app.use(express.static('web'));
 
 io.on('connection', function(socket){
-	console.log('a user connected, IP: ' + socket.request.connection.remoteAddress);
+	console.log('client connected');
 	
 	/**
 	 * send multicast to fin server

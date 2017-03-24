@@ -49,8 +49,8 @@ var App = (_ => {
 	}
 
 	function _handleOnRegister(msg) {
+		console.log(`===== receive from local server: ${msg} =====`);
 		msg = JSON.parse(msg);
-		console.log(msg);
 		if(msg.data.register) {
 			console.log('register success.');
 			clearInterval(_registerInterval);
@@ -64,7 +64,6 @@ var App = (_ => {
 	}
 
 	function _handleOnMessage(data) {
-		console.log('45646546213546')
 		data = JSON.parse(data);
 		console.log(data);
 		switch(data.event) {

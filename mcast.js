@@ -39,6 +39,7 @@ serverSocket.on('listening', function () {
  */
 serverSocket.on('message', function (message, rinfo) {
 	var remoteAddr = rinfo.address;
+	console.log(`===== server ip: ${remoteAddr} =====`);
 	var msg = JSON.parse(message);
 	switch(msg.event) {
 		case 'register':

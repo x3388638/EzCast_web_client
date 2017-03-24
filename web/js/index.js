@@ -34,6 +34,9 @@ var App = (_ => {
 	
 	function _handleSendMsg(e) {
 		if(e.keyCode == 13) {
+			if(_socketServer == null) {
+				return;
+			}
 			var msg = $inputMsg.val().trim();
 			$inputMsg.val('');
 			_socketServer.emit('message', JSON.stringify({

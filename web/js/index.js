@@ -10,7 +10,7 @@ var App = (_ => {
 	/**
 	 * init
 	 */
-	var _socketServer = null;
+	var _APITarget = null;
 	var _socket = io();
 	var _registerInterval = 0;
 	var _selfIP = null;
@@ -28,23 +28,30 @@ var App = (_ => {
 	 * ws event
 	 */
 	_socket.on('register', _handleOnRegister);
-	function _bindServerSocket() {
-		_socketServer.on('message', _handleOnMessage);
-	}
+	_socket.on('message', _handleOnMessage);
+
 	
 	function _handleSendMsg(e) {
 		if(e.keyCode == 13) {
-			if(_socketServer == null) {
+			if(_APITarget == null) {
 				return;
 			}
 			var msg = $inputMsg.val().trim();
 			$inputMsg.val('');
-			_socketServer.emit('message', JSON.stringify({
-				event: 'newMessage', 
+			$.ajax({
+				url: `${_APITarget}/message`, 
+				type: 'post', 
+				dataType: 'json', 
 				data: {
 					msg
+				}, 
+				success: function(data) {
+					// console.log(data);
+				}, 
+				error: function(jqXHR) {
+					console.log(jqXHR);
 				}
-			}));
+			});
 		}
 	}
 
@@ -54,18 +61,17 @@ var App = (_ => {
 		if(msg.data.register) {
 			console.log('register success.');
 			clearInterval(_registerInterval);
-			_socketServer = io.connect(msg.data.url);
-			_bindServerSocket();
+			_APITarget = msg.data.url;
 			_selfIP = msg.data.ip;
 			$inputName.text(`${_selfIP} > `);
 		} else {
-			console.log('register fail.')
+			console.log('register fail.');
 		}
 	}
 
 	function _handleOnMessage(data) {
 		data = JSON.parse(data);
-		console.log(data);
+		console.log(`===== receive msg from ${data.data.ip} =====`);
 		switch(data.event) {
 			case 'newMessage': 
 				_renderNewMessage(data.data.msg, data.data.ip);

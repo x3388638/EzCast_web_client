@@ -40,7 +40,14 @@ serverSocket.on('listening', function () {
 serverSocket.on('message', function (message, rinfo) {
 	var remoteAddr = rinfo.address;
 	console.log(`===== server ip: ${remoteAddr} =====`);
-	var msg = JSON.parse(message);
+	try {
+		var msg = JSON.parse(message);
+	} catch(err) {
+		console.log(err);
+	}
+	if(!msg) {
+		return;
+	}
 	switch(msg.event) {
 		case 'register':
 			if(msg.data.key == _registerKey) {

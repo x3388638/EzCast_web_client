@@ -7,6 +7,7 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var path = require('path');
 var cors = require('cors');
+var request = require('request');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -38,6 +39,7 @@ io.on('connection', function(socket){
 
 	socket.on('disconnect', function(){
 		console.log('user disconnected');
+		request.post(`http://${_serverIP}:${+CONFIG.webPort+1}/disconnect`, function(err, res, body) { });
 	});
 });
 

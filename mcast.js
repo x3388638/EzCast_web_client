@@ -1,13 +1,34 @@
 const CONFIG = require('./config.js');
+var os = require('os');
 var dgram = require('dgram');
 var serverSocket = dgram.createSocket("udp4");
 var SRC_PORT = CONFIG.udpPort;
 var DES_PORT = +SRC_PORT+1;
 var MULTICAST_ADDR = CONFIG.multicastAddr;
+var LOCAL_INTERFACES = [];
 
-serverSocket.bind(SRC_PORT, function () {
+/**
+ * get local interfaces ip
+ */
+var interfaces = os.networkInterfaces();
+for (var k in interfaces) {
+    for (var k2 in interfaces[k]) {
+        var address = interfaces[k][k2];
+        if (address.family === 'IPv4' && !address.internal) {
+            LOCAL_INTERFACES.push(address.address);
+        }
+    }
+}
+
+serverSocket.bind(SRC_PORT, MULTICAST_ADDR);
+
+serverSocket.on('listening', function () {
 	console.log(`udp server built on port ${SRC_PORT}`);
-	serverSocket.addMembership(MULTICAST_ADDR);
+	for(let ip of LOCAL_INTERFACES) {
+		serverSocket.addMembership(MULTICAST_ADDR, ip);
+	}
+	var address = serverSocket.address();
+	console.log('UDP Client listening on ' + address.address + ":" + address.port);
 });
 
 /**
@@ -29,17 +50,11 @@ function register(callback) {
 	});
 }
 
-serverSocket.on('listening', function () {
-	var address = serverSocket.address();
-	console.log('UDP Client listening on ' + address.address + ":" + address.port);
-});
-
 /**
  * handle receive multicast message
  */
 serverSocket.on('message', function (message, rinfo) {
 	var remoteAddr = rinfo.address;
-	console.log(`===== server ip: ${remoteAddr} =====`);
 	try {
 		var msg = JSON.parse(message);
 	} catch(err) {
@@ -50,6 +65,7 @@ serverSocket.on('message', function (message, rinfo) {
 	}
 	switch(msg.event) {
 		case 'register':
+			console.log(`===== server ip: ${remoteAddr} =====`);
 			if(msg.data.key == _registerKey) {
 				_registerCallback(remoteAddr, msg.data.ip);
 			}

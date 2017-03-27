@@ -68,7 +68,7 @@ serverSocket.on('message', function (message, rinfo) {
 		case 'register':
 			if(msg.data.key == _registerKey) {
 				console.log(`===== server ip: ${remoteAddr} =====`);
-				_registerCallback(remoteAddr, msg.data.ip);
+				_registerCallback(remoteAddr, msg.data.ip, msg.data.name);
 			}
 			break;
 	}

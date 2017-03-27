@@ -26,13 +26,14 @@ io.on('connection', function(socket){
 	 */
 	socket.on('register', function(data) {
 		data = JSON.parse(data);
-		mcast.register(data.name, function(url, selfIP) {
+		mcast.register(data.name, function(url, selfIP, name) {
 			_serverIP = url;
 			socket.emit('register', JSON.stringify({
 				data: {
 					register: true, 
 					url: `http://${url}:${+CONFIG.webPort+1}`, 
-					ip: selfIP
+					ip: selfIP, 
+					name
 				}
 			}));
 		});

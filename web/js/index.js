@@ -6,6 +6,7 @@ var App = (_ => {
 	var $inputContainer = $('#inputContainer');
 	var $inputName = $inputContainer.find('#name');
 	var $inputMsg = $inputContainer.find('#inputMsg');
+	var $editNameModal = $('#modal-editName');
 
 	/**
 	 * init
@@ -26,6 +27,7 @@ var App = (_ => {
 	 */
 	$inputMsg.on('keypress', _handleSendMsg);
 	$chatContainer.on('scroll', _handleScroll);
+	$editNameModal.on('click', '#btn-editName', _handleEditName);
 	
 	/**
 	 * ws event
@@ -66,7 +68,9 @@ var App = (_ => {
 			clearInterval(_registerInterval);
 			_APITarget = msg.data.url;
 			_selfIP = msg.data.ip;
-			$inputName.text(_selfIP);
+			_userName = msg.data.name;
+			$inputName.text(_userName);
+			$editNameModal.find('#input-editName').val(_userName);
 		} else {
 			console.log('register fail.');
 		}
@@ -88,6 +92,26 @@ var App = (_ => {
 		} else {
 			_autoScroll = false;
 		}
+	}
+
+	function _handleEditName() {
+		var newName = $editNameModal.find('#input-editName').val();
+		$.ajax({
+			url: `${_APITarget}/user`, 
+			type: 'post', 
+			dataType: 'json', 
+			data: {
+				name: newName
+			}, 
+			success: function(data) {
+				localStorage.EzCastUser = newName;
+				$inputName.text(newName);
+				$editNameModal.modal('hide');
+			}, 
+			error: function(jqXHR) {
+				console.log(jqXHR);
+			}
+		})
 	}
 
 	function _renderNewMessage(msg, ip, name) {

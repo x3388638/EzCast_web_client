@@ -14,6 +14,7 @@ var App = (_ => {
 	var _socket = io();
 	var _registerInterval = 0;
 	var _selfIP = null;
+	var _autoScroll = true;
 	$inputMsg.focus();
 	_registerInterval = setInterval(function() {
 		_socket.emit('register', '');
@@ -23,6 +24,7 @@ var App = (_ => {
 	 * bindEvent
 	 */
 	$inputMsg.on('keypress', _handleSendMsg);
+	$chatContainer.on('scroll', _handleScroll);
 	
 	/**
 	 * ws event
@@ -79,6 +81,14 @@ var App = (_ => {
 		}
 	}
 
+	function _handleScroll() {
+		if(_isScrollBottom()) {
+			_autoScroll = true;
+		} else {
+			_autoScroll = false;
+		}
+	}
+
 	function _renderNewMessage(msg, ip) {
 		$chatContainer.append(
 			`<div class="msgRow">
@@ -89,6 +99,17 @@ var App = (_ => {
 				<div class="content">${msg}</div>
 			</div>`
 		);
+		if(_autoScroll) {
+			_scrollToBottom();
+		}
+	}
+
+	function _isScrollBottom() {
+		return $chatContainer[0].scrollHeight - $chatContainer[0].scrollTop <= $chatContainer[0].clientHeight;
+	}
+
+	function _scrollToBottom() {
+		$chatContainer[0].scrollTop = $chatContainer[0].scrollHeight;
 	}
 
 })();

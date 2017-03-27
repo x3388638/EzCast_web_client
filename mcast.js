@@ -36,12 +36,13 @@ serverSocket.on('listening', function () {
  */
 let _registerKey = null;
 let _registerCallback = null;
-function register(callback) {
+function register(name, callback) {
 	_registerCallback = callback;
 	_registerKey = Math.random().toString(36).substring(7);
 	msg = JSON.stringify({
 		event: 'register', 
 		data: {
+			name, 
 			key: _registerKey
 		}
 	});

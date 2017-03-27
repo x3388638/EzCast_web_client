@@ -24,8 +24,9 @@ io.on('connection', function(socket){
 	/**
 	 * send multicast to fin server
 	 */
-	socket.on('register', function() {
-		mcast.register(function(url, selfIP) {
+	socket.on('register', function(data) {
+		data = JSON.parse(data);
+		mcast.register(data.name, function(url, selfIP) {
 			_serverIP = url;
 			socket.emit('register', JSON.stringify({
 				data: {
@@ -59,7 +60,8 @@ app.post('/message', cors(), function(req, res) {
 		event: 'newMessage', 
 		data: {
 			msg: req.body.msg, 
-			ip: req.body.ip
+			ip: req.body.ip, 
+			name: req.body.name
 		}
 	}));
 

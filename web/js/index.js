@@ -15,9 +15,10 @@ var App = (_ => {
 	var _registerInterval = 0;
 	var _selfIP = null;
 	var _autoScroll = true;
+	var _userName = localStorage.EzCastUser || '';
 	$inputMsg.focus();
 	_registerInterval = setInterval(function() {
-		_socket.emit('register', '');
+		_socket.emit('register', JSON.stringify({name: _userName}));
 	}, 2000);
 
 	/**
@@ -76,7 +77,7 @@ var App = (_ => {
 		console.log(`===== receive msg from ${data.data.ip} =====`);
 		switch(data.event) {
 			case 'newMessage': 
-				_renderNewMessage(data.data.msg, data.data.ip);
+				_renderNewMessage(data.data.msg, data.data.ip, data.data.name);
 				break;
 		}
 	}
@@ -89,11 +90,11 @@ var App = (_ => {
 		}
 	}
 
-	function _renderNewMessage(msg, ip) {
+	function _renderNewMessage(msg, ip, name) {
 		$chatContainer.append(
 			`<div class="msgRow">
 				<div class="title">
-					<span class="name">JonilaRS</span><br />
+					<span class="name">${name}</span><br />
 					<span class="ip">${ip}</span>
 				</div>
 				<div class="content">${msg}</div>

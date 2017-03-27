@@ -63,7 +63,7 @@ var App = (_ => {
 			clearInterval(_registerInterval);
 			_APITarget = msg.data.url;
 			_selfIP = msg.data.ip;
-			$inputName.text(`${_selfIP} > `);
+			$inputName.text(_selfIP);
 		} else {
 			console.log('register fail.');
 		}
@@ -82,8 +82,11 @@ var App = (_ => {
 	function _renderNewMessage(msg, ip) {
 		$chatContainer.append(
 			`<div class="msgRow">
-				<span class="title">${ip}</span>
-				<span class="content">${msg}</span>
+				<div class="title">
+					<span class="name">JonilaRS</span><br />
+					<span class="ip">${ip}</span>
+				</div>
+				<div class="content">${msg}</div>
 			</div>`
 		);
 	}

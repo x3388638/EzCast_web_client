@@ -20,7 +20,7 @@ for (var k in interfaces) {
     }
 }
 
-serverSocket.bind(SRC_PORT, MULTICAST_ADDR);
+serverSocket.bind(SRC_PORT);
 
 serverSocket.on('listening', function () {
 	console.log(`udp server built on port ${SRC_PORT}`);

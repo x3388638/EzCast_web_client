@@ -74,6 +74,7 @@ var App = (_ => {
 			_userName = msg.data.name;
 			$inputName.text(_userName);
 			$editNameModal.find('#input-editName').val(_userName);
+			_getHistoryMsg();
 		} else {
 			console.log('register fail.');
 		}
@@ -117,19 +118,54 @@ var App = (_ => {
 		})
 	}
 
+	function _getHistoryMsg() {
+		$.ajax({
+			url: `${_APITarget}/message`, 
+			type: 'get', 
+			dataType: 'json', 
+			success: function(data) {
+				if(!data.err) {
+					_renderHistoryMsg(data.list);
+				}
+			}, 
+			error: function(jqXHR) {
+				console.log(jqXHR);
+			}
+		});
+	}
+
 	function _renderNewMessage(msg, ip, name) {
-		$chatContainer.append(
-			`<div class="msgRow">
-				<div class="title">
-					<span class="name">${name}</span><br />
-					<span class="ip">${ip}</span>
-				</div>
-				<div class="content">${msg}</div>
-			</div>`
-		);
+		$chatContainer
+			.find('#current')
+			.append(
+				`<div class="msgRow">
+					<div class="title">
+						<span class="name">${name}</span><br />
+						<span class="ip">${ip}</span>
+					</div>
+					<div class="content">${msg}</div>
+				</div>`
+			);
 		if(_autoScroll) {
 			_scrollToBottom();
 		}
+	}
+
+	function _renderHistoryMsg(list) {
+		$chatContainer
+			.find('#history')
+			.append(list.map((msg, i) => {
+				return (`
+					<div class="msgRow">
+						<div class="title">
+							<span class="name">${msg.name}</span><br />
+							<span class="ip">${msg.ip}</span>
+						</div>
+						<div class="content">${msg.msg}</div>
+					</div>
+				`);
+			}));
+		_scrollToBottom();
 	}
 
 	function _isScrollBottom() {

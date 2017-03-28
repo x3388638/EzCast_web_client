@@ -85,7 +85,12 @@ var App = (_ => {
 		console.log(`===== receive msg from ${data.data.ip} =====`);
 		switch(data.event) {
 			case 'newMessage': 
-				_renderNewMessage(data.data.msg, data.data.ip, data.data.name, data.data.time);
+				_renderMsg('current', {
+					msg: data.data.msg, 
+					ip: data.data.ip, 
+					name: data.data.name, 
+					time: data.data.time
+				});
 				break;
 		}
 	}
@@ -125,7 +130,9 @@ var App = (_ => {
 			dataType: 'json', 
 			success: function(data) {
 				if(!data.err) {
-					_renderHistoryMsg(data.list);
+					for(let msg of data.list) {
+						_renderMsg('history', msg);
+					}
 				}
 			}, 
 			error: function(jqXHR) {
@@ -133,41 +140,27 @@ var App = (_ => {
 			}
 		});
 	}
-
-	function _renderNewMessage(msg, ip, name, time) {
-		$chatContainer
-			.find('#current')
-			.append(
-				`<div class="msgRow">
-					<div class="title">
-						<span class="name">${name}</span><br />
-						<span class="ip">${ip}</span>
-						<span class="time float-right"><span class="badge badge-pill badge-default">${time}</span></span>
-					</div>
-					<div class="content">${msg}</div>
-				</div>`
-			);
-		if(_autoScroll) {
+	
+	/**
+	 * [_renderMsg description]
+	 * @param  type   'current' || 'history'
+	 * @param  msgObj {msg, ip, name, ip}
+	 */
+	function _renderMsg(type, msgObj) {
+		let $container = type == 'history' ? $chatContainer.find('#history') : $chatContainer.find('#current');
+		$container.append(
+			`<div class="msgRow">
+				<div class="title">
+					<span class="name">${msgObj.name}</span><br />
+					<span class="ip">${msgObj.ip}</span>
+					<span class="time float-right"><span class="badge badge-pill badge-default">${msgObj.time}</span></span>
+				</div>
+				<div class="content">${msgObj.msg}</div>
+			</div>`
+		);
+		if(type == 'history' || type == 'current' && _autoScroll) {
 			_scrollToBottom();
 		}
-	}
-
-	function _renderHistoryMsg(list) {
-		$chatContainer
-			.find('#history')
-			.append(list.map((msg, i) => {
-				return (`
-					<div class="msgRow">
-						<div class="title">
-							<span class="name">${msg.name}</span><br />
-							<span class="ip">${msg.ip}</span>
-							<span class="time float-right"><span class="badge badge-pill badge-default">${msg.time}</span></span>
-						</div>
-						<div class="content">${msg.msg}</div>
-					</div>
-				`);
-			}));
-		_scrollToBottom();
 	}
 
 	function _isScrollBottom() {

@@ -42,6 +42,9 @@ var App = (_ => {
 				return;
 			}
 			var msg = $inputMsg.val().trim();
+			if(msg == '') {
+				return;
+			}
 			$inputMsg.val('');
 			$.ajax({
 				url: `${_APITarget}/message`, 

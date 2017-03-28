@@ -85,7 +85,7 @@ var App = (_ => {
 		console.log(`===== receive msg from ${data.data.ip} =====`);
 		switch(data.event) {
 			case 'newMessage': 
-				_renderNewMessage(data.data.msg, data.data.ip, data.data.name);
+				_renderNewMessage(data.data.msg, data.data.ip, data.data.name, data.data.time);
 				break;
 		}
 	}
@@ -134,7 +134,7 @@ var App = (_ => {
 		});
 	}
 
-	function _renderNewMessage(msg, ip, name) {
+	function _renderNewMessage(msg, ip, name, time) {
 		$chatContainer
 			.find('#current')
 			.append(
@@ -142,6 +142,7 @@ var App = (_ => {
 					<div class="title">
 						<span class="name">${name}</span><br />
 						<span class="ip">${ip}</span>
+						<span class="time float-right"><span class="badge badge-pill badge-default">${time}</span></span>
 					</div>
 					<div class="content">${msg}</div>
 				</div>`
@@ -160,6 +161,7 @@ var App = (_ => {
 						<div class="title">
 							<span class="name">${msg.name}</span><br />
 							<span class="ip">${msg.ip}</span>
+							<span class="time float-right"><span class="badge badge-pill badge-default">${msg.time}</span></span>
 						</div>
 						<div class="content">${msg.msg}</div>
 					</div>

@@ -62,7 +62,8 @@ app.post('/message', cors(), function(req, res) {
 		data: {
 			msg: req.body.msg, 
 			ip: req.body.ip, 
-			name: req.body.name
+			name: req.body.name, 
+			time: req.body.time
 		}
 	}));
 

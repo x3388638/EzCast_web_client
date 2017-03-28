@@ -23,7 +23,17 @@ body {
 
 #chatContainer .msgRow .title {
 	overflow: hidden;
-	height: 40px;
+	height: 45px;
+}
+
+#chatContainer .msgRow .title .time{
+	position: relative;
+	top: -8px;
+	margin-right: 10px;
+}
+
+#chatContainer .msgRow:hover .title .time{
+	display: inline;
 }
 
 #chatContainer .msgRow .title .name {
@@ -33,7 +43,7 @@ body {
 
 #chatContainer .msgRow .title .ip {
 	font-size: 10px;
-	top: -12px;
+	top: -8px;
 	position: relative;
 }
 

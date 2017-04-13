@@ -35,9 +35,7 @@ serverSocket.on('listening', function () {
  * send multicast to find server
  */
 let _registerKey = null;
-let _registerCallback = null;
-function register(name, callback) {
-	_registerCallback = callback;
+function register(name) {
 	_registerKey = Math.random().toString(36).substring(7);
 	msg = JSON.stringify({
 		event: 'register', 
@@ -49,6 +47,14 @@ function register(name, callback) {
 	serverSocket.send(new Buffer(msg), DES_PORT, MULTICAST_ADDR, function () {
 		console.log(`Send multicast to port ${DES_PORT} ::: ${msg}`);
 	});
+}
+
+function getKey() {
+	return _registerKey;
+}
+
+function resetKey() {
+	_registerKey = null;
 }
 
 /**
@@ -75,5 +81,7 @@ serverSocket.on('message', function (message, rinfo) {
 });
 
 module.exports = {
-	register
+	register, 
+	getKey, 
+	resetKey
 }

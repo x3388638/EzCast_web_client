@@ -16,27 +16,15 @@ app.use(bodyParser.json());
 app.use(express.static('web'));
 
 let _serverIP;
-let _socket;
 io.on('connection', function(socket){
 	console.log('client connected');
-	_socket = socket;
 	
 	/**
-	 * send multicast to fin server
+	 * send multicast to find server
 	 */
 	socket.on('register', function(data) {
 		data = JSON.parse(data);
-		mcast.register(data.name, function(url, selfIP, name) {
-			_serverIP = url;
-			socket.emit('register', JSON.stringify({
-				data: {
-					register: true, 
-					url: `http://${url}:${+CONFIG.webPort+1}`, 
-					ip: selfIP, 
-					name
-				}
-			}));
-		});
+		mcast.register(data.name);
 	});
 
 	socket.on('disconnect', function(){
@@ -48,7 +36,33 @@ io.on('connection', function(socket){
 /**
  * API handler
  */
-app.post('/message', cors(), function(req, res) {
+app.post('/register', cors(), function (req, res) {
+	let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	_serverIP = ip.replace('::ffff:', '');
+	let key = req.body.key;
+	let selfIP = req.body.ip;
+	let name = req.body.name;
+	if (key != mcast.getKey()) {
+		res.json({
+			err: 'permission denied'
+		});
+		return;
+	}
+	mcast.resetKey();
+	io.sockets.emit('register', JSON.stringify({
+		data: {
+			register: true, 
+			url: `http://${_serverIP}:${+CONFIG.webPort+1}`, 
+			ip: selfIP, 
+			name
+		}
+	}));
+	res.json({
+		err: 0
+	});
+});
+
+app.post('/message', cors(), function (req, res) {
 	let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 	ip = ip.replace('::ffff:', '');
 	if(ip != _serverIP) {
@@ -57,7 +71,7 @@ app.post('/message', cors(), function(req, res) {
 		return;
 	}
 
-	_socket.emit('message', JSON.stringify({
+	io.sockets.emit('message', JSON.stringify({
 		event: 'newMessage', 
 		data: {
 			msg: req.body.msg, 

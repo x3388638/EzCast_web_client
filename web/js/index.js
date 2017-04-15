@@ -17,6 +17,9 @@ var App = (_ => {
 	var _selfIP = null;
 	var _autoScroll = true;
 	var _userName = localStorage.EzCastUser || '';
+	var _msgHistory = []; // queue
+	var _msgHistoryLimit = 10;
+	var _msgHistoryIndex = 0; // up arrow => +1
 	$inputMsg.focus();
 	_registerInterval = setInterval(function() {
 		_socket.emit('register', JSON.stringify({name: _userName}));
@@ -26,6 +29,7 @@ var App = (_ => {
 	 * bindEvent
 	 */
 	$inputMsg.on('keypress', _handleSendMsg);
+	$inputMsg.on('keydown', _handleKeydown);
 	$chatContainer.on('scroll', _handleScroll);
 	$editNameModal.on('click', '#btn-editName', _handleEditName);
 	
@@ -46,6 +50,11 @@ var App = (_ => {
 				return;
 			}
 			$inputMsg.val('');
+			// store msg
+			_msgHistory = [..._msgHistory, msg];
+			_msgHistory.length > _msgHistoryLimit && _msgHistory.shift();
+			_msgHistoryIndex = 0;
+
 			$.ajax({
 				url: `${_APITarget}/message`, 
 				type: 'post', 
@@ -60,6 +69,19 @@ var App = (_ => {
 					console.log(jqXHR);
 				}
 			});
+		}
+	}
+
+	function _handleKeydown(e) {
+		switch (e.keyCode) {
+			case 38:
+				// up arrow
+				_showHistoryMsg(1);
+				break;
+			case 40:
+				// down arrow
+				_showHistoryMsg(-1);
+				break;
 		}
 	}
 
@@ -169,6 +191,24 @@ var App = (_ => {
 
 	function _scrollToBottom() {
 		$chatContainer[0].scrollTop = $chatContainer[0].scrollHeight;
+	}
+
+	function _showHistoryMsg(key) {
+		// console.log(`ori index: ${_msgHistoryIndex}`);
+		_msgHistoryIndex += key;
+		if (_msgHistoryIndex < 0) {
+			_msgHistoryIndex = 0
+		}
+		if (_msgHistoryIndex > _msgHistory.length) {
+			_msgHistoryIndex = _msgHistory.length
+		}
+		// console.log(`new index: ${_msgHistoryIndex}`);
+		// console.log(_msgHistory);
+		var msg = _msgHistory[_msgHistory.length - _msgHistoryIndex] || '';
+		$inputMsg.val(msg);
+		setTimeout(_ => {
+			$inputMsg[0].setSelectionRange(msg.length, msg.length);	
+		}, 1);
 	}
 
 })();

@@ -31,8 +31,6 @@ var ChatScreen = (_ => {
 		$chatContainer[0].scrollTop = $chatContainer[0].scrollHeight;
 	}
 
-
-
 	function getHistoryMsg() {
 		let _APITarget = App.getAPITarget();
 		$.ajax({

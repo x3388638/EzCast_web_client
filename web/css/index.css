@@ -30,10 +30,12 @@ body {
 	position: relative;
 	top: -8px;
 	margin-right: 10px;
+	opacity: 0.3;
+	transition: all .2s;
 }
 
 #chatContainer .msgRow:hover .title .time{
-	display: inline;
+	opacity: 1;
 }
 
 #chatContainer .msgRow .title .name {

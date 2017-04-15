@@ -15,7 +15,6 @@ var App = (_ => {
 	var _socket = io();
 	var _registerInterval = 0;
 	var _selfIP = null;
-	var _autoScroll = true;
 	var _userName = localStorage.EzCastUser || '';
 	var _msgHistory = []; // queue
 	var _msgHistoryLimit = 10;
@@ -30,7 +29,6 @@ var App = (_ => {
 	 */
 	$inputMsg.on('keypress', _handleSendMsg);
 	$inputMsg.on('keydown', _handleKeydown);
-	$chatContainer.on('scroll', _handleScroll);
 	$editNameModal.on('click', '#btn-editName', _handleEditName);
 	
 	/**
@@ -107,21 +105,13 @@ var App = (_ => {
 		console.log(`===== receive msg from ${data.data.ip} =====`);
 		switch(data.event) {
 			case 'newMessage': 
-				_renderMsg('current', {
+				ChatScreen.renderMsg('current', {
 					msg: data.data.msg, 
 					ip: data.data.ip, 
 					name: data.data.name, 
 					time: data.data.time
 				});
 				break;
-		}
-	}
-
-	function _handleScroll() {
-		if(_isScrollBottom()) {
-			_autoScroll = true;
-		} else {
-			_autoScroll = false;
 		}
 	}
 
@@ -153,7 +143,7 @@ var App = (_ => {
 			success: function(data) {
 				if(!data.err) {
 					for(let msg of data.list) {
-						_renderMsg('history', msg);
+						ChatScreen.renderMsg('history', msg);
 					}
 				}
 			}, 
@@ -163,36 +153,6 @@ var App = (_ => {
 		});
 	}
 	
-	/**
-	 * [_renderMsg description]
-	 * @param  type   'current' || 'history'
-	 * @param  msgObj {msg, ip, name, ip}
-	 */
-	function _renderMsg(type, msgObj) {
-		let $container = type == 'history' ? $chatContainer.find('#history') : $chatContainer.find('#current');
-		$container.append(
-			`<div class="msgRow">
-				<div class="title">
-					<span class="name">${msgObj.name}</span><br />
-					<span class="ip">${msgObj.ip}</span>
-					<span class="time float-right"><span class="badge badge-pill badge-default">${msgObj.time}</span></span>
-				</div>
-				<div class="content">${msgObj.msg}</div>
-			</div>`
-		);
-		if(type == 'history' || type == 'current' && _autoScroll) {
-			_scrollToBottom();
-		}
-	}
-
-	function _isScrollBottom() {
-		return $chatContainer[0].scrollHeight - $chatContainer[0].scrollTop <= $chatContainer[0].clientHeight;
-	}
-
-	function _scrollToBottom() {
-		$chatContainer[0].scrollTop = $chatContainer[0].scrollHeight;
-	}
-
 	function _showHistoryMsg(key) {
 		// console.log(`ori index: ${_msgHistoryIndex}`);
 		_msgHistoryIndex += key;

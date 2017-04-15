@@ -31,6 +31,27 @@ var ChatScreen = (_ => {
 		$chatContainer[0].scrollTop = $chatContainer[0].scrollHeight;
 	}
 
+
+
+	function getHistoryMsg() {
+		let _APITarget = App.getAPITarget();
+		$.ajax({
+			url: `${_APITarget}/message`, 
+			type: 'get', 
+			dataType: 'json', 
+			success: function(data) {
+				if(!data.err) {
+					for(let msg of data.list) {
+						ChatScreen.renderMsg('history', msg);
+					}
+				}
+			}, 
+			error: function(jqXHR) {
+				console.log(jqXHR);
+			}
+		});
+	}
+
 	/**
 	 * [_renderMsg description]
 	 * @param  type   'current' || 'history'
@@ -54,6 +75,7 @@ var ChatScreen = (_ => {
 	}
 
 	return {
-		renderMsg
+		renderMsg, 
+		getHistoryMsg
 	}
 })();

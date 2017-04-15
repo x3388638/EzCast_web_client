@@ -1,11 +1,4 @@
 var App = (_ => {
-	/**
-	 * cache dom
-	 */
-	var $inputContainer = $('#inputContainer');
-	var $inputName = $inputContainer.find('#name');
-	var $inputMsg = $inputContainer.find('#inputMsg');
-	var $editNameModal = $('#modal-editName');
 
 	/**
 	 * init
@@ -18,11 +11,6 @@ var App = (_ => {
 	_registerInterval = setInterval(function() {
 		_socket.emit('register', JSON.stringify({name: _userName}));
 	}, 2000);
-
-	/**
-	 * bindEvent
-	 */
-	$editNameModal.on('click', '#btn-editName', _handleEditName);
 	
 	/**
 	 * ws event
@@ -39,9 +27,8 @@ var App = (_ => {
 			_APITarget = msg.data.url;
 			_selfIP = msg.data.ip;
 			_userName = msg.data.name;
-			$inputName.text(_userName);
-			$editNameModal.find('#input-editName').val(_userName);
-			_getHistoryMsg();
+			ChatInput.setUser(_userName);
+			ChatScreen.getHistoryMsg();
 		} else {
 			console.log('register fail.');
 		}
@@ -60,44 +47,6 @@ var App = (_ => {
 				});
 				break;
 		}
-	}
-
-	function _handleEditName() {
-		var newName = $editNameModal.find('#input-editName').val();
-		$.ajax({
-			url: `${_APITarget}/user`, 
-			type: 'post', 
-			dataType: 'json', 
-			data: {
-				name: newName
-			}, 
-			success: function(data) {
-				localStorage.EzCastUser = newName;
-				$inputName.text(newName);
-				$editNameModal.modal('hide');
-			}, 
-			error: function(jqXHR) {
-				console.log(jqXHR);
-			}
-		})
-	}
-
-	function _getHistoryMsg() {
-		$.ajax({
-			url: `${_APITarget}/message`, 
-			type: 'get', 
-			dataType: 'json', 
-			success: function(data) {
-				if(!data.err) {
-					for(let msg of data.list) {
-						ChatScreen.renderMsg('history', msg);
-					}
-				}
-			}, 
-			error: function(jqXHR) {
-				console.log(jqXHR);
-			}
-		});
 	}
 	
 	function getAPITarget() {

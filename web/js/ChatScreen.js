@@ -31,6 +31,17 @@ var ChatScreen = (_ => {
 		$chatContainer[0].scrollTop = $chatContainer[0].scrollHeight;
 	}
 
+	function _showNotification(msg) {
+		var n = new Notification('公告', {
+			body: msg,
+			icon: 'http://d2e70e9yced57e.cloudfront.net/edu/images/posts/12392/fraud-alert-credit-report.jpg'
+		});
+		n.onclick = function () {
+			n.close();
+			window.focus();
+		}
+	}
+
 	function getHistoryMsg() {
 		let _APITarget = App.getAPITarget();
 		$.ajax({
@@ -57,6 +68,7 @@ var ChatScreen = (_ => {
 	 */
 	function renderMsg(type, msgObj) {
 		let $container = type == 'history' ? $chatContainer.find('#history') : $chatContainer.find('#current');
+		type == 'current' && msgObj.admin && App.getNotificationPermission() && App.getNotificationPermission() != 'denied' && _showNotification(msgObj.msg);
 		$container.append(
 			`<div class="msgRow ${msgObj.admin ? 'admin' : ''}">
 				<div class="title">

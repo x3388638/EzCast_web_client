@@ -8,9 +8,12 @@ var App = (_ => {
 	var _registerInterval = 0;
 	var _selfIP = null;
 	var _userName = localStorage.EzCastUser || '';
+	var _isNotification = null;
 	_registerInterval = setInterval(function() {
 		_socket.emit('register', JSON.stringify({name: _userName}));
 	}, 2000);
+
+	_setNotification();
 	
 	/**
 	 * ws event
@@ -52,13 +55,29 @@ var App = (_ => {
 				break;
 		}
 	}
+
+	function _setNotification() {
+		if ("Notification" in window) {
+			_isNotification = Notification.permission;
+			if (Notification.permission == 'default') {
+				Notification.requestPermission(function (permission) {
+					_isNotification = permission;
+				});
+			}
+		}
+	}
 	
 	function getAPITarget() {
 		return _APITarget;
 	}
 
+	function getNotificationPermission() {
+		return _isNotification;
+	}
+
 	return {
-		getAPITarget
+		getAPITarget, 
+		getNotificationPermission
 	}
 
 })();

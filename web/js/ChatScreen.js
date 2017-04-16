@@ -58,7 +58,7 @@ var ChatScreen = (_ => {
 	function renderMsg(type, msgObj) {
 		let $container = type == 'history' ? $chatContainer.find('#history') : $chatContainer.find('#current');
 		$container.append(
-			`<div class="msgRow">
+			`<div class="msgRow ${msgObj.admin ? 'admin' : ''}">
 				<div class="title">
 					<span class="name">${msgObj.name}</span><br />
 					<span class="ip">${msgObj.ip}</span>

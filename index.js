@@ -37,17 +37,17 @@ io.on('connection', function(socket){
  * API handler
  */
 app.post('/register', cors(), function (req, res) {
-	let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-	_serverIP = ip.replace('::ffff:', '');
 	let key = req.body.key;
-	let selfIP = req.body.ip;
-	let name = req.body.name;
 	if (key != mcast.getKey()) {
 		res.json({
 			err: 'permission denied'
 		});
 		return;
 	}
+	let ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	_serverIP = ip.replace('::ffff:', '');
+	let selfIP = req.body.ip;
+	let name = req.body.name;
 	mcast.resetKey();
 	io.sockets.emit('register', JSON.stringify({
 		data: {
@@ -70,14 +70,15 @@ app.post('/message', cors(), function (req, res) {
 		res.send('access denied');
 		return;
 	}
-
+	
 	io.sockets.emit('message', JSON.stringify({
 		event: 'newMessage', 
 		data: {
 			msg: req.body.msg, 
 			ip: req.body.ip, 
 			name: req.body.name, 
-			time: req.body.time
+			time: req.body.time, 
+			admin: req.body.admin
 		}
 	}));
 

@@ -22,7 +22,7 @@ var App = (_ => {
     });
 
 	function _handleOnRegister(msg) {
-		console.log(`===== receive from local server: ${msg} =====`);
+		// console.log(`===== receive from local server: ${msg} =====`);
 		msg = JSON.parse(msg);
 		if(msg.data.register) {
 			console.log('register success.');
@@ -39,14 +39,15 @@ var App = (_ => {
 
 	function _handleOnMessage(data) {
 		data = JSON.parse(data);
-		console.log(`===== receive msg from ${data.data.ip} =====`);
+		// console.log(`===== receive msg from ${data.data.ip} =====`);
 		switch(data.event) {
 			case 'newMessage': 
 				ChatScreen.renderMsg('current', {
 					msg: data.data.msg, 
 					ip: data.data.ip, 
 					name: data.data.name, 
-					time: data.data.time
+					time: data.data.time, 
+					admin: data.data.admin
 				});
 				break;
 		}

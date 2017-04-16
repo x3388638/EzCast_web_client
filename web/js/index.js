@@ -17,6 +17,9 @@ var App = (_ => {
 	 */
 	_socket.on('register', _handleOnRegister);
 	_socket.on('message', _handleOnMessage);
+	_socket.on('disconnect', function () {
+        console.error("ws disconnected");  
+    });
 
 	function _handleOnRegister(msg) {
 		console.log(`===== receive from local server: ${msg} =====`);
